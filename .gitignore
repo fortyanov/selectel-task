@@ -1,0 +1,8 @@
+# Executable
+selectel-task
+
+# Editor directories and files
+.idea
+
+# fake env
+.env
