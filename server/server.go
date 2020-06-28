@@ -22,8 +22,8 @@ func Init() (err error) {
 	}
 
 	r := mux.NewRouter()
-	r.HandleFunc("/scalets", scaletsCreate).Methods("POST")
-	r.HandleFunc("/scalets", scaletsDelete).Methods("DELETE")
+	r.HandleFunc("/scalets", createScalets).Methods("POST")
+	r.HandleFunc("/scalets", deleteScalets).Methods("DELETE")
 
 	srv = &http.Server{
 		Addr:         cfg.Host + ":" + cfg.Port,
@@ -47,7 +47,7 @@ func Run(c context.Context, cancel context.CancelFunc) {
 }
 
 func Shutdown() {
-	c, cancel := context.WithTimeout(ctx, time.Second * time.Duration(30))
+	c, cancel := context.WithTimeout(ctx, time.Second*time.Duration(30))
 	defer cancel()
 
 	if err := srv.Shutdown(c); err != nil {

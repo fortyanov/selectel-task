@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"time"
 
 	"selectel-task/vscale"
 )
@@ -13,7 +12,7 @@ type Scalets struct {
 	Count int `json:"count"`
 }
 
-func scaletsCreate(w http.ResponseWriter, r *http.Request) {
+func createScalets(w http.ResponseWriter, r *http.Request) {
 	var (
 		err     error
 		scalets = new(Scalets)
@@ -28,11 +27,14 @@ func scaletsCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vscale.NewVscaleClient(time.Second * time.Duration(cfg.WriteTimeout)).CreateScalets(scalets.Count)
+	if err = vscale.NewClient().CreateScalets(scalets.Count); err != nil {
+		JsonError(w, err.Error(), http.StatusNotAcceptable)
+		return
+	}
 	JsonCreated(w)
 }
 
-func scaletsDelete(w http.ResponseWriter, r *http.Request) {
-	vscale.NewVscaleClient(time.Second * time.Duration(cfg.WriteTimeout)).DeleteAllScalets()
+func deleteScalets(w http.ResponseWriter, r *http.Request) {
+	vscale.NewClient().DeleteAllScalets()
 	JsonDeleted(w)
 }
