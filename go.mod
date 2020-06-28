@@ -1,6 +1,6 @@
 module selectel-task
 
-go 1.15
+go 1.14
 
 require (
 	github.com/gorilla/mux v1.7.4
