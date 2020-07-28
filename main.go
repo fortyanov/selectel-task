@@ -23,6 +23,10 @@ func init() {
 }
 
 func main() {
+	os.Exit(realMain())
+}
+
+func realMain() int {
 	var (
 		err error
 		cfg *config
@@ -30,29 +34,29 @@ func main() {
 
 	if cfg, err = initConfig(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Init logger error: %s", err)
-		os.Exit(1)
+		return 1
 	}
 
 	if err = log.Init(cfg.LogDest, cfg.LogTag, cfg.LogLevel); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Init logger error: %s", err)
-		os.Exit(1)
+		return 1
 	}
 	defer log.Close()
 
 	if err = pidfile.Write(cfg.PidFile); err != nil {
 		log.Error("Create PID file error:", err)
-		os.Exit(1)
+		return 1
 	}
 	defer pidfile.Unlink(cfg.PidFile)
 
 	if err = server.Init(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Init server error: %s", err)
-		os.Exit(1)
+		return 1
 	}
 
 	if err = vscale.Init(); err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "Init vscale error: %s", err)
-		os.Exit(1)
+		return 1
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -68,7 +72,8 @@ func main() {
 	case s := <-signalEvents:
 		log.Info(fmt.Sprintf("Caught signal %v: terminating", s))
 	case <-ctx.Done():
-		os.Exit(1)
+		return 1
 	}
 
+	return 0
 }
